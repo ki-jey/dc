@@ -40,16 +40,12 @@ pipeline {
         gitLabConnection('gitlab-ee-censhare')
     }
 
-    parameters {
-        string(name: 'CUSTOM_COMMIT', defaultValue: 'HEAD', description: '[Optional] Run the pipeline on a specific COMMIT or TAG instead of the branch HEAD. For example: f4c79b41794 or censhare_2019.3.9')
-        booleanParam(name: 'IS_A_RELEASE_BUILD', defaultValue: false, description: '[Optional] If enabled, different Ant targets will be used and the last pipeline stage will promote all artifacts to the QA repositories')
-    }
-
     environment {
         CENSHARE_DEV          = "censhare-dev"         // generic dev repos for libs and tar.gz releses from stage "Server"
         CENSHARE_QA           = "censhare-qa"          // generic staging repo for QA
         LIBS_RELEASE_LOCAL    = "libs-release-local"   // Maven repo
         LIBS_SNAPSHOT_LOCAL   = "libs-snapshot-local"
+        LATEST_OWASP          = "$(curl https://jeremylong.github.io/DependencyCheck/current.txt)"
     }
     stages {
         stage('Server') {
@@ -92,7 +88,6 @@ pipeline {
                 gitlabCommitStatus("Server build") {
                     checkout scm
                     script{
-                        LATEST_OWASP=sh 'curl https://jeremylong.github.io/DependencyCheck/current.txt'
                         sh "curl -O -L https://dl.bintray.com/jeremy-long/owasp/dependency-check-${env.LATEST_OWASP}-release.zip"
                         sh 'ls && pwd'
                         unzip zipFile: "dependency-check-${env.LATEST_OWASP}-release.zip", dir: './'
