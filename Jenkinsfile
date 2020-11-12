@@ -92,7 +92,7 @@ pipeline {
                 gitlabCommitStatus("Server build") {
                     checkout scm
                     script{
-                        LATEST_OWASP=$(curl https://jeremylong.github.io/DependencyCheck/current.txt)
+                        LATEST_OWASP=$(curl 'https://jeremylong.github.io/DependencyCheck/current.txt')
                         sh "curl -O -L https://dl.bintray.com/jeremy-long/owasp/dependency-check-${env.LATEST_OWASP}-release.zip"
                         sh 'ls && pwd'
                         unzip zipFile: "dependency-check-${env.LATEST_OWASP}-release.zip", dir: './'
