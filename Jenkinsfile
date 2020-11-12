@@ -46,11 +46,41 @@ pipeline {
     }
 
     environment {
+        LATEST_OWASP          = "$(curl https://jeremylong.github.io/DependencyCheck/current.txt)"
+
+        // destinations artifactory repositories for the build artifacts
         CENSHARE_DEV          = "censhare-dev"         // generic dev repos for libs and tar.gz releses from stage "Server"
         CENSHARE_QA           = "censhare-qa"          // generic staging repo for QA
         LIBS_RELEASE_LOCAL    = "libs-release-local"   // Maven repo
-        LIBS_SNAPSHOT_LOCAL   = "libs-snapshot-local"
-        LATEST_OWASP          = '$(curl https://jeremylong.github.io/DependencyCheck/current.txt)'
+        LIBS_SNAPSHOT_LOCAL   = "libs-snapshot-local"  // Maven repo
+        RPM_DEV               = "rpm-dev"
+        RPM_QA                = "rpm-qa"
+        DOCKER_DEV            = "docker-dev"
+        DOCKER_QA             = "docker-qa"
+        RPM_PATH              = ""              // eg. ${RPM_DEV}/stable/censhare/${VERSION_MAJOR}/${VERSION_MINOR}
+        RPM_FILE_SERVER         = ""
+        RPM_FILE_SERVICECLIENT  = ""
+        DOCKER_CENSHARE       = "censhare"      // eg. docker-dev.censhare.com/${DOCKER_CENSHARE}/censhare-server:${VERSION_LONG}
+        FILESERVER_PATH       = "/fileserver-james"  // CIFS mount on the kubernetes node
+        STAGING_DIR           = "/fileserver-james/ZZ_Build_Staging"
+
+        // version related variables
+        VERSION_LONG      = "" // eg. 2019.2.2 (grep from censhare-Server/build.common.properties. Sometimes ending on a1, b3 etc. )
+        VERSION_SHORT     = "" // eg. 2019.2
+        VERSION_MAJOR     = "" // eg. 2019
+        VERSION_MINOR     = "" // eg. 2
+
+        // EPOCH_SEC is a workaround, because build numbers in multibranch pipeline are not unique across branches. The goal is to have unique, short and incremental number.
+        EPOCH_SEC = "${(int) (currentBuild.startTimeInMillis / 1000 - 1576800000) }"  // seconds since unix epoch minus 50 years (60*60*24*365*50=1576800000)
+        BUILD_UNIQ = "b${env.BUILD_ID}t${EPOCH_SEC}"  // used on only for JOB_PREFIX. I will probably merge both variables in few weeks
+
+        // others
+        LAST_COMMITTER_EMAIL = "no-reply@censhare.com" // mailext() in post{} with Kubernetes plugin can't get recipientProviders with culprits()
+        BRANCH_NAME_HYPHENS = "${env.BRANCH_NAME}".toLowerCase().replaceAll("[^a-z0-9]","-")
+        JOB_PREFIX = "${BUILD_UNIQ}-${BRANCH_NAME_HYPHENS}" // BUILD_TAG doesn't fit out needs
+        CONTAINER_PREFIX = "${JOB_PREFIX.substring(0, Math.min(50, JOB_PREFIX.length()))}" // kubernetes container name is limited to 63 characters, RFC 1035
+        CUSTOM_COMMIT = "${params.CUSTOM_COMMIT}"  // workaround of MissingPropertyException with JENKINS-40574, JENKINS-41929
+
     }
     stages {
         stage('Server') {
