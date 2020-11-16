@@ -13,6 +13,10 @@ pipeline {
 
     stages {
         stage('Update dependency check') {
+            environment {
+                GIT_AUTH = credentials('1d73a515-5d91-4cc7-926a-0f56d67a2f0e')
+            }
+
             steps {
                 node('maven&&build&&ojdk11') {
                     gitlabCommitStatus("tests") {
@@ -34,7 +38,7 @@ pipeline {
                                     git add .
                                     git commit -am '[Jenkins] daily update'
                                     git push origin master
-                                   """
+                                """
                             }
                         }
                     }
