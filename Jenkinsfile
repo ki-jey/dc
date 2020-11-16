@@ -50,7 +50,7 @@ pipeline {
                             git config --local credential.helper "!f() { echo username=${GIT_AUTH_USR}; echo password=${GIT_AUTH_PSW}; }; f"
                             git add .
                             git commit -m 'daily update'
-                            git push origin ${env.BRANCH_NAME}
+                            git push origin master
                             """
 
 //                             withCredentials([usernamePassword(credentialsId: '1d73a515-5d91-4cc7-926a-0f56d67a2f0e',
