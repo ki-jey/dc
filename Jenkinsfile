@@ -28,6 +28,8 @@ pipeline {
 
                                 sh 'ls'
                                 unzip zipFile: "dependency-check-${LATEST_OWASP}-release.zip", dir: './'
+                                sh 'ls'
+
                                 sh "chmod -R 777 dependency-check && ./dependency-check/bin/dependency-check.sh -f HTML -s . -o ./1.html --project update"
                                 zip archive: true, glob: 'dependency-check', zipFile: "dc.zip";
 
@@ -35,7 +37,7 @@ pipeline {
                                 sh "rm dependency-check-${LATEST_OWASP}-release.zip && rm 1.html && rm -rf dependency-check"
 
                                 sh 'ls'
-                                sh 'git add . && git commit -m "daily update"'
+                                sh 'git add . && git commit -m \"daily update\"'
 
                                 withCredentials([usernamePassword(credentialsId: '1d73a515-5d91-4cc7-926a-0f56d67a2f0e',
                                             passwordVariable: 'GIT_PASSWORD',
