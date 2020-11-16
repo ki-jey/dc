@@ -35,7 +35,7 @@ pipeline {
                                 withCredentials([usernamePassword(credentialsId: '1d73a515-5d91-4cc7-926a-0f56d67a2f0e',
                                             passwordVariable: 'GIT_PASSWORD',
                                             usernameVariable: 'GIT_USERNAME')]) {
-                                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@git.censhare.com/vne/dc.git master')
+                                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@git.censhare.com/vne/dc.git')
                                 }
                             }
                         }
