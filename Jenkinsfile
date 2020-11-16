@@ -26,7 +26,7 @@ pipeline {
                                 sh "chmod -R 777 dependency-check && ./dependency-check/bin/dependency-check.sh -f HTML -s . -o ./dependency-check/update.html --project update"
                                 zip archive: true, glob: 'dependency-check', zipFile: "dc.zip";
                                 sh "rm dependency-check-${LATEST_OWASP}-release.zip && rm -rf dependency-check"
-                                sh "git config --global user.email 'jenkins.user@censhare.com' && git config --global user.name 'Jenkins user'"
+                                sh "git config --global user.email 'app-jenkins@censhare.com' && git config --global user.name 'Jenkins user'"
                                 sh "git add . && git commit -m 'daily-update'"
 
                                 withCredentials([usernamePassword(credentialsId: '1d73a515-5d91-4cc7-926a-0f56d67a2f0e',
